@@ -1,20 +1,21 @@
 package main
 
 import (
-	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 
-	"fero.org/msg"
+	"database/sql"
 )
 
 func main() {
-	fmt.Println(msg.GetMessage())
+	db, err := sql.Open("mysql", "root:admin@tcp(192.168.99.100:3306)/test")
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
 
-	var myMap map[string]int
-	myMap = make(map[string]int)
-
-	myMap["Hello"] = 1
-	myMap["World"] = 2
-	for key, value := range myMap {
-		fmt.Println("Key:", key, "Value:", value)
+	_, err = db.Exec("insert into account (name, password_hash, salt)"+
+		"values (?, ?, ?)", "wei", "123", "234")
+	if err != nil {
+		panic(err)
 	}
 }
